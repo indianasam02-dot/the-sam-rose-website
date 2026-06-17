@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base Camp — Trip Planner & Catch Log</title>
+
+  <!-- Fonts: Playfair Display (headings) + Inter (body), matches Sam's site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===================================================
+       HEADER (always visible)
+  =================================================== -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <!-- Clicking the logo always returns to the trips list -->
+      <button class="logo" id="logoBtn" type="button">
+        <span class="logo-mark">▲</span>
+        Base Camp
+      </button>
+
+      <nav class="top-nav">
+        <button class="nav-btn" id="navTripsBtn" type="button">My Trips</button>
+        <button class="nav-btn" id="navCatchesBtn" type="button">All Catches</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ===================================================
+         VIEW 1 — TRIPS LIST (home)
+    =================================================== -->
+    <section id="view-trips" class="view">
+
+      <div class="view-head">
+        <div>
+          <p class="eyebrow">Your logbook</p>
+          <h1 class="view-title">My Trips</h1>
+        </div>
+        <button class="btn btn-primary" id="newTripBtn" type="button">+ New Trip</button>
+      </div>
+
+      <!-- New-trip form (hidden until "New Trip" is clicked) -->
+      <div class="card form-card hidden" id="newTripForm">
+        <h2 class="form-title">Plan a new trip</h2>
+        <div class="form-row">
+          <label for="tripName">Trip name</label>
+          <input type="text" id="tripName" placeholder="e.g. Provo River Saturday" maxlength="60" />
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="tripType">Type</label>
+            <select id="tripType">
+              <option value="fishing">🎣 Fishing</option>
+              <option value="camping">🏕️ Camping</option>
+              <option value="day hike">🥾 Day Hike</option>
+              <option value="backcountry">🏔️ Backcountry</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="tripDate">Date</label>
+            <input type="date" id="tripDate" />
+          </div>
+          <div class="form-row">
+            <label for="tripLocation">Location</label>
+            <input type="text" id="tripLocation" placeholder="e.g. Uinta Mountains" maxlength="60" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" id="cancelTripBtn" type="button">Cancel</button>
+          <button class="btn btn-primary" id="createTripBtn" type="button">Create trip</button>
+        </div>
+      </div>
+
+      <!-- Trip cards get rendered here by JavaScript -->
+      <div class="trip-grid" id="tripGrid"></div>
+
+      <!-- Empty state (shown when there are no trips yet) -->
+      <div class="empty-state hidden" id="tripsEmpty">
+        <p class="empty-mark">🏕️</p>
+        <h3>No trips yet</h3>
+        <p>Create your first trip to start building a gear list and logging catches.</p>
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         VIEW 2 — TRIP DETAIL (gear checklist + catch log)
+    =================================================== -->
+    <section id="view-detail" class="view hidden">
+
+      <button class="back-link" id="backToTripsBtn" type="button">← All trips</button>
+
+      <!-- Trip title + meta get filled in by JavaScript -->
+      <div class="detail-head">
+        <p class="eyebrow" id="detailType">Fishing</p>
+        <h1 class="view-title" id="detailName">Trip name</h1>
+        <p class="detail-meta" id="detailMeta">Date · Location</p>
+        <button class="btn btn-danger-ghost btn-sm" id="deleteTripBtn" type="button">Delete trip</button>
+      </div>
+
+      <div class="detail-columns">
+
+        <!-- GEAR CHECKLIST -->
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Gear Checklist</h2>
+            <span class="pill" id="gearCount">0 / 0</span>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="progress">
+            <div class="progress-fill" id="gearProgress" style="width:0%"></div>
+          </div>
+          <p class="progress-label" id="gearProgressLabel">0% packed</p>
+
+          <!-- Checklist items render here -->
+          <ul class="checklist" id="gearList"></ul>
+
+          <!-- Add custom gear -->
+          <div class="add-row">
+            <input type="text" id="newGearInput" placeholder="Add an item…" maxlength="50" />
+            <button class="btn btn-primary btn-sm" id="addGearBtn" type="button">Add</button>
+          </div>
+        </div>
+
+        <!-- CATCH LOG -->
+        <div class="card panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Catch Log</h2>
+            <span class="pill" id="catchCount">0 fish</span>
+          </div>
+
+          <!-- Add-catch form -->
+          <div class="catch-form">
+            <div class="form-row">
+              <label for="catchSpecies">Species</label>
+              <input type="text" id="catchSpecies" placeholder="e.g. Brook trout" maxlength="40" />
+            </div>
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label for="catchLength">Length (in)</label>
+                <input type="number" id="catchLength" placeholder="0" min="0" step="0.5" />
+              </div>
+              <div class="form-row">
+                <label for="catchFly">Fly / lure</label>
+                <input type="text" id="catchFly" placeholder="e.g. Elk hair caddis" maxlength="40" />
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm full" id="addCatchBtn" type="button">Log catch</button>
+          </div>
+
+          <!-- Catch entries render here -->
+          <ul class="catch-list" id="catchList"></ul>
+          <p class="muted-note hidden" id="catchEmpty">No catches logged for this trip yet.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================
+         VIEW 3 — ALL CATCHES (rolled up across all trips)
+    =================================================== -->
+    <section id="view-catches" class="view hidden">
+
+      <div class="view-head">
+        <div>
+          <p class="eyebrow">Every fish, every trip</p>
+          <h1 class="view-title">All Catches</h1>
+        </div>
+      </div>
+
+      <!-- Stats dashboard -->
+      <div class="stats-row" id="statsRow"></div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <label for="speciesFilter">Filter by species</label>
+        <select id="speciesFilter">
+          <option value="all">All species</option>
+        </select>
+        <label for="sortBy">Sort by</label>
+        <select id="sortBy">
+          <option value="recent">Most recent</option>
+          <option value="longest">Longest first</option>
+        </select>
+      </div>
+
+      <!-- Master catch list -->
+      <ul class="catch-list wide" id="allCatchList"></ul>
+
+      <div class="empty-state hidden" id="catchesEmpty">
+        <p class="empty-mark">🐟</p>
+        <h3>No catches yet</h3>
+        <p>Open a trip and log your first catch — it'll show up here.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>Base Camp · built by Sam Rose</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
