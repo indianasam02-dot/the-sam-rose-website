@@ -4,7 +4,7 @@ A personal web project built for IS 201. The site brings together a professional
 resume/home page, a topic page on fly fishing, and a small interactive web app —
 all hosted together through GitHub Pages.
 
-**Live site:** `https://YOURUSERNAME.github.io/REPONAME/`
+**Live site:** `(https://indianasam02-dot.github.io/the-sam-rose-website/)`
 *(replace with your actual GitHub Pages link once it's published)*
 
 ---
